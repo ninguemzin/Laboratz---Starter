@@ -1,29 +1,45 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import io from "socket.io-client";
 import { DndContext } from "@dnd-kit/core";
 import { useDroppable } from "@dnd-kit/core";
 import Card from "./components/Card.jsx";
 
+// CORREÇÃO: A inicialização do socket pode ficar aqui fora ou ser movida para dentro do componente com useMemo para melhor prática. Vamos mantê-la simples por enquanto.
 const socket = io("http://localhost:4000");
+
+// CORREÇÃO: O hook useState foi removido do topo do arquivo.
 
 export default function App() {
   const [gameId, setGameId] = useState("room1");
   const [state, setState] = useState(null);
+  const [previousBoard, setPreviousBoard] = useState(null); // Esta é a declaração correta
 
   useEffect(() => {
     socket.on("connect", () => console.log("connected", socket.id));
-    socket.on("gameState", (g) => setState(g));
+
+    // CORREÇÃO: Lógica do listener corrigida para evitar bugs
+    const handleGameState = (g) => {
+      // Usamos a forma funcional do setState para ter acesso ao estado mais recente (prev)
+      setState((prev) => {
+        setPreviousBoard(prev?.board); // Guarda o tabuleiro de ANTES da atualização
+        return g; // Retorna o novo estado para ser aplicado
+      });
+    };
+
+    socket.on("gameState", handleGameState);
     socket.on("errorMsg", (m) => alert(m));
 
+    // A função de limpeza remove o listener específico para evitar memory leaks
     return () => {
-      socket.off("gameState");
+      socket.off("gameState", handleGameState);
       socket.off("errorMsg");
     };
-  }, []);
+  }, []); // O array vazio [] está correto, pois só queremos registrar os listeners uma vez.
 
   function create() {
     socket.emit("createGame", { gameId });
   }
+
   function join() {
     socket.emit("joinGame", { gameId });
   }
@@ -35,16 +51,12 @@ export default function App() {
   function handleDragEnd(event) {
     const { over, active } = event;
 
-    // Se soltou em uma área válida (um slot do tabuleiro)
     if (over && active) {
-      const slotId = over.id; // Ex: "slot-0-1"
-      const cardId = active.id; // Ex: "rat_001"
-
-      // Encontrar a carta inteira a partir do ID
+      const slotId = over.id;
+      const cardId = active.id;
+      const myHand = state?.hands?.[socket.id] || []; // Pega a mão mais recente
       const cardToPlay = myHand.find((c) => c.cardId === cardId);
-
-      // Extrair a linha e coluna do ID do slot
-      const [_, r, c] = slotId.split("-"); // ["slot", "0", "1"]
+      const [_, r, c] = slotId.split("-");
 
       if (cardToPlay && r !== undefined && c !== undefined) {
         play(parseInt(r), parseInt(c), cardToPlay);
@@ -52,9 +64,7 @@ export default function App() {
     }
   }
 
-  const myHand = state && state.hands ? state.hands[socket.id] : [];
-
-  // Lógica da mensagem de fim de jogo
+  const myHand = state?.hands?.[socket.id] || [];
   let gameOverMessage = "";
   if (state?.status === "finished") {
     if (state.winner === null) {
@@ -70,7 +80,6 @@ export default function App() {
     <DndContext onDragEnd={handleDragEnd}>
       <div className="min-h-screen p-4 bg-gray-100 font-sans">
         <div className="max-w-3xl mx-auto relative">
-          {/* MODAL DE FIM DE JOGO */}
           {state?.status === "finished" && (
             <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
               <div className="bg-white p-8 rounded-lg text-center">
@@ -108,66 +117,75 @@ export default function App() {
               Entrar
             </button>
           </div>
-
-          <div className="grid grid-cols-5 gap-2 mb-4 h-32 items-center">
+          <div className="grid grid-cols-5 gap-2 mb-4 h-36 items-center">
             {myHand.map((card) => (
-              <Card key={card.cardId} card={card} isDraggable={true} />
+              <Card
+                key={card.cardId}
+                card={card}
+                isDraggable={true}
+                owner={socket.id}
+                player1Id={state?.players?.[0]}
+              />
             ))}
           </div>
-
-          <Board state={state} />
+          <Board state={state} previousBoard={previousBoard} />
         </div>
       </div>
     </DndContext>
   );
 }
 
-function DroppableSlot({ r, c }) {
-  const { isOver, setNodeRef } = useDroppable({
-    id: `slot-${r}-${c}`, // ID único para a área "soltável"
-  });
+// O componente DroppableSlot é importado, então não precisa ser declarado aqui.
+// Se DroppableSlot não estiver em um arquivo separado, ele deve ficar aqui.
 
-  return (
-    <div
-      ref={setNodeRef}
-      className={`h-28 border-4 rounded-md flex items-center justify-center ${
-        isOver ? "bg-green-200 border-green-400" : "bg-white border-gray-300"
-      }`}
-    >
-      {/* Opcional: mostrar um ícone ou texto */}
-    </div>
-  );
-}
-
-// src/App.jsx
-
-function Board({ state }) {
+function Board({ state, previousBoard }) {
   const board = state
     ? state.board
     : Array.from({ length: 3 }, () => Array.from({ length: 3 }, () => null));
-  const player1_id = state?.players[0];
+  const player1_id = state?.players?.[0];
 
   return (
     <div>
-      {state?.status === "playing" && (
-        <div className="text-center text-xl font-bold mb-2">
-          {/* ... (código do placar continua igual) ... */}
-        </div>
-      )}
-
+      <div className="text-center text-xl font-bold mb-2">
+        {state?.status === "playing" && (
+          <>
+            <span className="text-blue-600">
+              {board.flat().filter((c) => c && c.owner === player1_id).length}
+            </span>
+            <span> x </span>
+            <span className="text-red-600">
+              {board.flat().filter((c) => c && c.owner !== player1_id).length}
+            </span>
+          </>
+        )}
+      </div>
       <div className="grid grid-cols-3 gap-2">
         {board.map((row, r) =>
           row.map((cell, c) => {
             let content;
-            if (cell) {
-              // CÉLULA OCUPADA: Renderiza o componente Card completo
-              content = <Card card={cell.card} isDraggable={false} />;
-            } else {
-              // CÉLULA VAZIA: Renderiza a área para soltar
-              content = <DroppableSlot r={r} c={c} />;
+            let isFlipping = false;
+            if (
+              previousBoard &&
+              cell &&
+              previousBoard[r]?.[c]?.owner !== cell.owner
+            ) {
+              isFlipping = true;
             }
-
-            // Lógica da borda
+            if (cell) {
+              content = (
+                <Card
+                  card={cell.card}
+                  owner={cell.owner}
+                  player1Id={player1_id}
+                  isFlipping={isFlipping}
+                />
+              );
+            } else {
+              // Assumindo que DroppableSlot está em um arquivo separado
+              // Se não, você precisa do código dele aqui.
+              // Por agora, vamos recriá-lo para garantir que funcione.
+              content = <LocalDroppableSlot r={r} c={c} />;
+            }
             const ownerId = cell ? state.players.indexOf(cell.owner) : -1;
             const borderColor =
               ownerId === -1
@@ -175,7 +193,6 @@ function Board({ state }) {
                 : ownerId === 0
                 ? "border-blue-500"
                 : "border-red-500";
-
             return (
               <div
                 key={`${r}-${c}`}
@@ -188,5 +205,19 @@ function Board({ state }) {
         )}
       </div>
     </div>
+  );
+}
+
+function LocalDroppableSlot({ r, c }) {
+  const { isOver, setNodeRef } = useDroppable({
+    id: `slot-${r}-${c}`,
+  });
+  return (
+    <div
+      ref={setNodeRef}
+      className={`h-full w-full rounded-md flex items-center justify-center ${
+        isOver ? "bg-green-200 border-green-400" : "bg-white/50"
+      }`}
+    />
   );
 }
