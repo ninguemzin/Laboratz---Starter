@@ -1,0 +1,72 @@
+[
+  {
+    "cardId": "rat_001",
+    "name": "Rato Quântico",
+    "element": "radioativo",
+    "rarity": "rare",
+    "sides": { "top": 2, "right": 5, "bottom": 3, "left": 1 }
+  },
+  {
+    "cardId": "rat_002",
+    "name": "Rato Engrenado",
+    "element": "mecanico",
+    "rarity": "common",
+    "sides": { "top": 3, "right": 2, "bottom": 2, "left": 4 }
+  },
+  {
+    "cardId": "rat_003",
+    "name": "Rato Mutante",
+    "element": "mutante",
+    "rarity": "common",
+    "sides": { "top": 1, "right": 4, "bottom": 3, "left": 2 }
+  },
+  {
+    "cardId": "rat_004",
+    "name": "Rato Sombrio",
+    "element": "mutante",
+    "rarity": "uncommon",
+    "sides": { "top": 4, "right": 1, "bottom": 2, "left": 3 }
+  },
+  {
+    "cardId": "rat_005",
+    "name": "Rato Radioativo Junior",
+    "element": "radioativo",
+    "rarity": "common",
+    "sides": { "top": 2, "right": 2, "bottom": 2, "left": 2 }
+  },
+  {
+    "cardId": "rat_006",
+    "name": "Rato Tático",
+    "element": "mecanico",
+    "rarity": "uncommon",
+    "sides": { "top": 5, "right": 1, "bottom": 1, "left": 1 }
+  },
+  {
+    "cardId": "rat_007",
+    "name": "Rato Ágil",
+    "element": "mutante",
+    "rarity": "common",
+    "sides": { "top": 1, "right": 3, "bottom": 4, "left": 2 }
+  },
+  {
+    "cardId": "rat_008",
+    "name": "Rato Bomba",
+    "element": "radioativo",
+    "rarity": "rare",
+    "sides": { "top": 4, "right": 4, "bottom": 1, "left": 1 }
+  },
+  {
+    "cardId": "rat_009",
+    "name": "Rato Blindado",
+    "element": "mecanico",
+    "rarity": "rare",
+    "sides": { "top": 3, "right": 3, "bottom": 3, "left": 3 }
+  },
+  {
+    "cardId": "rat_010",
+    "name": "Rato Sorrateiro",
+    "element": "mutante",
+    "rarity": "uncommon",
+    "sides": { "top": 2, "right": 5, "bottom": 1, "left": 2 }
+  }
+]
