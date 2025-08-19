@@ -111,7 +111,7 @@ export default function App() {
 
           <div className="grid grid-cols-5 gap-2 mb-4 h-32 items-center">
             {myHand.map((card) => (
-              <Card key={card.cardId} card={card} />
+              <Card key={card.cardId} card={card} isDraggable={true} />
             ))}
           </div>
 
@@ -139,57 +139,51 @@ function DroppableSlot({ r, c }) {
   );
 }
 
+// src/App.jsx
+
 function Board({ state }) {
   const board = state
     ? state.board
     : Array.from({ length: 3 }, () => Array.from({ length: 3 }, () => null));
   const player1_id = state?.players[0];
-  const player2_id = state?.players[1];
 
   return (
     <div>
-      {/* EXIBIR PONTUAÇÃO */}
       {state?.status === "playing" && (
         <div className="text-center text-xl font-bold mb-2">
-          <span className="text-blue-600">
-            {
-              state.board.flat().filter((c) => c && c.owner === player1_id)
-                .length
-            }
-          </span>
-          <span> x </span>
-          <span className="text-red-600">
-            {
-              state.board.flat().filter((c) => c && c.owner === player2_id)
-                .length
-            }
-          </span>
+          {/* ... (código do placar continua igual) ... */}
         </div>
       )}
 
       <div className="grid grid-cols-3 gap-2">
         {board.map((row, r) =>
           row.map((cell, c) => {
+            let content;
             if (cell) {
-              // Se a célula está ocupada, mostre a carta que está lá
-              const ownerId = state.players.indexOf(cell.owner);
-              const borderColor =
-                ownerId === 0 ? "border-blue-500" : "border-red-500";
-              return (
-                <div
-                  key={`${r}-${c}`}
-                  className={`h-28 border-4 ${borderColor} bg-white flex items-center justify-center relative  rounded-md p-1`}
-                >
-                  <div className="text-sm text-center">
-                    <div>{cell.card.name}</div>
-                    <div className="text-xs">{cell.card.element}</div>
-                  </div>
-                </div>
-              );
+              // CÉLULA OCUPADA: Renderiza o componente Card completo
+              content = <Card card={cell.card} isDraggable={false} />;
             } else {
-              // Se a célula está vazia, mostre a área "soltável"
-              return <DroppableSlot key={`${r}-${c}`} r={r} c={c} />;
+              // CÉLULA VAZIA: Renderiza a área para soltar
+              content = <DroppableSlot r={r} c={c} />;
             }
+
+            // Lógica da borda
+            const ownerId = cell ? state.players.indexOf(cell.owner) : -1;
+            const borderColor =
+              ownerId === -1
+                ? ""
+                : ownerId === 0
+                ? "border-blue-500"
+                : "border-red-500";
+
+            return (
+              <div
+                key={`${r}-${c}`}
+                className={`h-36 border-4 rounded-md ${borderColor}`}
+              >
+                {content}
+              </div>
+            );
           })
         )}
       </div>

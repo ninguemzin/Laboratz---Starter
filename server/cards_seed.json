@@ -4,69 +4,79 @@
     "name": "Rato Quântico",
     "element": "radioativo",
     "rarity": "rare",
-    "sides": { "top": 2, "right": 5, "bottom": 3, "left": 1 }
+    "sides": { "top": 2, "right": 5, "bottom": 3, "left": 1 },
+    "imageUrl": "https://placehold.co/150x200/F9A825/000000?text=Rato%0AQuantico"
   },
   {
     "cardId": "rat_002",
     "name": "Rato Engrenado",
     "element": "mecanico",
     "rarity": "common",
-    "sides": { "top": 3, "right": 2, "bottom": 2, "left": 4 }
+    "sides": { "top": 3, "right": 2, "bottom": 2, "left": 4 },
+    "imageUrl": "https://placehold.co/150x200/78909C/FFFFFF?text=Rato%0AEngrenado"
   },
   {
     "cardId": "rat_003",
     "name": "Rato Mutante",
     "element": "mutante",
     "rarity": "common",
-    "sides": { "top": 1, "right": 4, "bottom": 3, "left": 2 }
+    "sides": { "top": 1, "right": 4, "bottom": 3, "left": 2 },
+    "imageUrl": "https://placehold.co/150x200/66BB6A/000000?text=Rato%0AMutante"
   },
   {
     "cardId": "rat_004",
     "name": "Rato Sombrio",
     "element": "mutante",
     "rarity": "uncommon",
-    "sides": { "top": 4, "right": 1, "bottom": 2, "left": 3 }
+    "sides": { "top": 4, "right": 1, "bottom": 2, "left": 3 },
+    "imageUrl": "https://placehold.co/150x200/5E35B1/FFFFFF?text=Rato%0ASombrio"
   },
   {
     "cardId": "rat_005",
-    "name": "Rato Radioativo Junior",
+    "name": "Rato Radioativo Jr",
     "element": "radioativo",
     "rarity": "common",
-    "sides": { "top": 2, "right": 2, "bottom": 2, "left": 2 }
+    "sides": { "top": 2, "right": 2, "bottom": 2, "left": 2 },
+    "imageUrl": "https://placehold.co/150x200/FDD835/000000?text=Rato%0ARadioativo%0AJr"
   },
   {
     "cardId": "rat_006",
     "name": "Rato Tático",
     "element": "mecanico",
     "rarity": "uncommon",
-    "sides": { "top": 5, "right": 1, "bottom": 1, "left": 1 }
+    "sides": { "top": 5, "right": 1, "bottom": 1, "left": 1 },
+    "imageUrl": "https://placehold.co/150x200/A1887F/FFFFFF?text=Rato%0ATatico"
   },
   {
     "cardId": "rat_007",
     "name": "Rato Ágil",
     "element": "mutante",
     "rarity": "common",
-    "sides": { "top": 1, "right": 3, "bottom": 4, "left": 2 }
+    "sides": { "top": 1, "right": 3, "bottom": 4, "left": 2 },
+    "imageUrl": "https://placehold.co/150x200/4CAF50/000000?text=Rato%0AAgil"
   },
   {
     "cardId": "rat_008",
     "name": "Rato Bomba",
     "element": "radioativo",
     "rarity": "rare",
-    "sides": { "top": 4, "right": 4, "bottom": 1, "left": 1 }
+    "sides": { "top": 4, "right": 4, "bottom": 1, "left": 1 },
+    "imageUrl": "https://placehold.co/150x200/EF5350/FFFFFF?text=Rato%0ABomba"
   },
   {
     "cardId": "rat_009",
     "name": "Rato Blindado",
     "element": "mecanico",
     "rarity": "rare",
-    "sides": { "top": 3, "right": 3, "bottom": 3, "left": 3 }
+    "sides": { "top": 3, "right": 3, "bottom": 3, "left": 3 },
+    "imageUrl": "https://placehold.co/150x200/BDBDBD/000000?text=Rato%0ABlindado"
   },
   {
     "cardId": "rat_010",
     "name": "Rato Sorrateiro",
     "element": "mutante",
     "rarity": "uncommon",
-    "sides": { "top": 2, "right": 5, "bottom": 1, "left": 2 }
+    "sides": { "top": 2, "right": 5, "bottom": 1, "left": 2 },
+    "imageUrl": "https://placehold.co/150x200/7E57C2/FFFFFF?text=Rato%0ASorrateiro"
   }
 ]
