@@ -91,24 +91,6 @@ function placeCard(game, r, c, card, player) {
 io.on("connection", (socket) => {
   console.log("socket connected", socket.id);
 
-  socket.on("playCard", ({ gameId, r, c, card }) => {
-    const game = games[gameId];
-    if (!game) return;
-    // valida turno simples
-    if (game.turn !== socket.id)
-      return socket.emit("errorMsg", "Não é seu turno");
-    const player = socket.id;
-    placeCard(game, r, c, card, player);
-
-    // Trocar turno
-    game.turn = game.players.find((id) => id !== socket.id) || socket.id;
-
-    // VERIFICAR FIM DE JOGO (NOVA LINHA)
-    checkGameOver(game);
-
-    io.to(gameId).emit("gameState", game);
-  });
-
   socket.on("createGame", ({ gameId }) => {
     games[gameId] = {
       board: createEmptyBoard(),
@@ -122,7 +104,7 @@ io.on("connection", (socket) => {
   socket.on("joinGame", ({ gameId }) => {
     const game = games[gameId];
     if (!game) return socket.emit("errorMsg", "Jogo não existe");
-    if (game.players.length >= 2) return socket.emit("errorMsg", "Sala cheia");
+    if (game.players.length === 2) return socket.emit("errorMsg", "Sala cheia");
     game.players.push(socket.id);
     socket.join(gameId);
 
@@ -146,8 +128,13 @@ io.on("connection", (socket) => {
       return socket.emit("errorMsg", "Não é seu turno");
     const player = socket.id;
     placeCard(game, r, c, card, player);
-    // trocar turno
+
+    // Trocar turno
     game.turn = game.players.find((id) => id !== socket.id) || socket.id;
+
+    // VERIFICAR FIM DE JOGO (NOVA LINHA)
+    checkGameOver(game);
+
     io.to(gameId).emit("gameState", game);
   });
 
