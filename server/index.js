@@ -21,6 +21,35 @@ function elementAdvantage(e1, e2) {
   return 0;
 }
 
+function checkGameOver(game) {
+  const isBoardFull = game.board.every((row) =>
+    row.every((cell) => cell !== null)
+  );
+  if (!isBoardFull) return;
+
+  const p1_id = game.players[0];
+  const p2_id = game.players[1];
+
+  let p1_score = 0;
+  let p2_score = 0;
+
+  for (const row of game.board) {
+    for (const cell of row) {
+      if (cell.owner === p1_id) p1_score++;
+      if (cell.owner === p2_id) p2_score++;
+    }
+  }
+
+  let winner = null;
+  if (p1_score > p2_score) winner = p1_id;
+  if (p2_score > p1_score) winner = p2_id;
+  // Se for empate, winner continua null
+
+  game.status = "finished";
+  game.winner = winner;
+  game.score = { [p1_id]: p1_score, [p2_id]: p2_score };
+}
+
 function createEmptyBoard() {
   return Array.from({ length: 3 }, () => Array.from({ length: 3 }, () => null));
 }
@@ -51,6 +80,19 @@ function placeCard(game, r, c, card, player) {
 
 io.on("connection", (socket) => {
   console.log("socket connected", socket.id);
+
+  socket.on("playCard", ({ gameId, r, c, card }) => {
+    // ... (código existente de validação e placeCard) ...
+    placeCard(game, r, c, card, player);
+
+    // Trocar turno
+    game.turn = game.players.find((id) => id !== socket.id) || socket.id;
+
+    // VERIFICAR FIM DE JOGO (NOVA LINHA)
+    checkGameOver(game);
+
+    io.to(gameId).emit("gameState", game);
+  });
 
   socket.on("createGame", ({ gameId }) => {
     games[gameId] = {
