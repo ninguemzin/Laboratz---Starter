@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import io from "socket.io-client";
 import { DndContext } from "@dnd-kit/core";
 import { useDroppable } from "@dnd-kit/core";
+import Card from "./components/Card.jsx";
 
 const socket = io("http://localhost:4000");
 
@@ -192,38 +193,6 @@ function Board({ state }) {
           })
         )}
       </div>
-    </div>
-  );
-}
-
-function DropSlot({ r, c, onPlay, hand }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="w-full h-full flex items-center justify-center">
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="px-2 py-1 border rounded"
-      >
-        Jogar
-      </button>
-      {open && (
-        <div className="absolute top-full mt-2 p-2 bg-white border rounded z-10">
-          {hand.map((card) => (
-            <div key={card.cardId} className="flex items-center gap-2 mb-1">
-              <div className="text-xs">{card.name}</div>
-              <button
-                onClick={() => {
-                  onPlay(r, c, card);
-                  setOpen(false);
-                }}
-                className="text-xs px-2 py-1 border rounded"
-              >
-                OK
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   );
 }
