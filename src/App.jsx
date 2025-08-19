@@ -36,9 +36,39 @@ export default function App() {
 
   const myHand = state && state.hands ? state.hands[socket.id] : [];
 
+  // Lógica da mensagem de fim de jogo
+  let gameOverMessage = "";
+  if (state?.status === "finished") {
+    if (state.winner === null) {
+      gameOverMessage = "Empate!";
+    } else if (state.winner === socket.id) {
+      gameOverMessage = "Você Venceu!";
+    } else {
+      gameOverMessage = "Você Perdeu!";
+    }
+  }
+
   return (
     <div className="min-h-screen p-4 bg-gray-100 font-sans">
       <div className="max-w-3xl mx-auto">
+        {/* MODAL DE FIM DE JOGO */}
+        {state?.status === "finished" && (
+          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
+            <div className="bg-white p-8 rounded-lg text-center">
+              <h2 className="text-4xl font-bold mb-4">{gameOverMessage}</h2>
+              <p className="text-lg">
+                Placar Final: {state.score[state.players[0]]} a{" "}
+                {state.score[state.players[1]]}
+              </p>
+              <button
+                onClick={() => window.location.reload()}
+                className="mt-6 px-4 py-2 rounded bg-blue-500 text-white"
+              >
+                Jogar Novamente
+              </button>
+            </div>
+          </div>
+        )}
         <h1 className="text-2xl font-bold mb-4">Laboratz — Prototype</h1>
         <div className="flex gap-2 mb-4">
           <input
