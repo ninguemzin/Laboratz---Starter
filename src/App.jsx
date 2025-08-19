@@ -1,41 +1,94 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import io from "socket.io-client";
 import { DndContext } from "@dnd-kit/core";
 import { useDroppable } from "@dnd-kit/core";
 import Card from "./components/Card.jsx";
-
 // CORREÇÃO: A inicialização do socket pode ficar aqui fora ou ser movida para dentro do componente com useMemo para melhor prática. Vamos mantê-la simples por enquanto.
 const socket = io("http://localhost:4000");
 
 // CORREÇÃO: O hook useState foi removido do topo do arquivo.
 
+const SOUNDS = {
+  place: "https://cdn.pixabay.com/audio/2022/03/15/audio_51b70c3f5d.mp3",
+  flip: "https://cdn.pixabay.com/audio/2021/08/04/audio_12b0c342f5.mp3",
+  win: "https://cdn.pixabay.com/audio/2022/11/17/audio_88f2f37b3f.mp3",
+  lose: "https://cdn.pixabay.com/audio/2022/02/21/audio_03a11d8c11.mp3",
+};
+
+function playSound(soundUrl) {
+  const audio = new Audio(soundUrl);
+  audio.play();
+}
+
+// src/App.jsx
+
 export default function App() {
   const [gameId, setGameId] = useState("room1");
   const [state, setState] = useState(null);
-  const [previousBoard, setPreviousBoard] = useState(null); // Esta é a declaração correta
+  const [previousBoard, setPreviousBoard] = useState(null);
+  const prevStateRef = useRef();
 
+  // --- HOOK PARA EFEITOS SONOROS ---
+  // Este hook depende do 'state' e roda a cada mudança para verificar se um som deve ser tocado.
   useEffect(() => {
-    socket.on("connect", () => console.log("connected", socket.id));
+    if (!state) return;
 
-    // CORREÇÃO: Lógica do listener corrigida para evitar bugs
+    const prevState = prevStateRef.current;
+
+    // 1. Som de Fim de Jogo
+    if (state.status === "finished" && prevState?.status !== "finished") {
+      if (state.winner === socket.id) {
+        playSound(SOUNDS.win);
+      } else {
+        playSound(SOUNDS.lose);
+      }
+    }
+
+    // 2. Som de Jogar ou Virar Carta
+    if (state.status === "playing" && prevState?.board) {
+      const prevCardCount = prevState.board.flat().filter(Boolean).length;
+      const currentCardCount = state.board.flat().filter(Boolean).length;
+
+      if (currentCardCount > prevCardCount) {
+        playSound(SOUNDS.place);
+      } else if (currentCardCount === prevCardCount) {
+        const myPrevScore = prevState.board
+          .flat()
+          .filter((c) => c && c.owner === socket.id).length;
+        const myCurrentScore = state.board
+          .flat()
+          .filter((c) => c && c.owner === socket.id).length;
+        if (myCurrentScore > myPrevScore) {
+          playSound(SOUNDS.flip);
+        }
+      }
+    }
+
+    // Guarda o estado atual para a próxima comparação
+    prevStateRef.current = state;
+  }, [state]);
+
+  // --- HOOK PARA CONEXÃO E EVENTOS DO SOCKET ---
+  // Este hook tem um array de dependências vazio [] e roda apenas uma vez.
+  useEffect(() => {
     const handleGameState = (g) => {
-      // Usamos a forma funcional do setState para ter acesso ao estado mais recente (prev)
       setState((prev) => {
-        setPreviousBoard(prev?.board); // Guarda o tabuleiro de ANTES da atualização
-        return g; // Retorna o novo estado para ser aplicado
+        setPreviousBoard(prev?.board);
+        return g;
       });
     };
 
+    socket.on("connect", () => console.log("connected", socket.id));
     socket.on("gameState", handleGameState);
     socket.on("errorMsg", (m) => alert(m));
 
-    // A função de limpeza remove o listener específico para evitar memory leaks
     return () => {
       socket.off("gameState", handleGameState);
       socket.off("errorMsg");
     };
-  }, []); // O array vazio [] está correto, pois só queremos registrar os listeners uma vez.
+  }, []);
 
+  // --- FUNÇÕES DE LÓGICA DO JOGO ---
   function create() {
     socket.emit("createGame", { gameId });
   }
@@ -50,11 +103,10 @@ export default function App() {
 
   function handleDragEnd(event) {
     const { over, active } = event;
-
     if (over && active) {
       const slotId = over.id;
       const cardId = active.id;
-      const myHand = state?.hands?.[socket.id] || []; // Pega a mão mais recente
+      const myHand = state?.hands?.[socket.id] || [];
       const cardToPlay = myHand.find((c) => c.cardId === cardId);
       const [_, r, c] = slotId.split("-");
 
@@ -76,10 +128,29 @@ export default function App() {
     }
   }
 
+  // --- RENDERIZAÇÃO DO COMPONENTE (JSX) ---
   return (
     <DndContext onDragEnd={handleDragEnd}>
+      {/* ... todo o seu JSX continua aqui, ele já estava correto ... */}
       <div className="min-h-screen p-4 bg-gray-100 font-sans">
         <div className="max-w-3xl mx-auto relative">
+          {state?.status === "finished" && (
+            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
+              <div className="bg-white p-8 rounded-lg text-center">
+                <h2 className="text-4xl font-bold mb-4">{gameOverMessage}</h2>
+                <p className="text-lg">
+                  Placar Final: {state.score[state.players[0]]} a{" "}
+                  {state.score[state.players[1]]}
+                </p>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="mt-6 px-4 py-2 rounded bg-blue-500 text-white"
+                >
+                  Jogar Novamente
+                </button>
+              </div>
+            </div>
+          )}
           {state?.status === "finished" && (
             <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
               <div className="bg-white p-8 rounded-lg text-center">
@@ -134,9 +205,6 @@ export default function App() {
     </DndContext>
   );
 }
-
-// O componente DroppableSlot é importado, então não precisa ser declarado aqui.
-// Se DroppableSlot não estiver em um arquivo separado, ele deve ficar aqui.
 
 function Board({ state, previousBoard }) {
   const board = state
@@ -207,7 +275,6 @@ function Board({ state, previousBoard }) {
     </div>
   );
 }
-
 function LocalDroppableSlot({ r, c }) {
   const { isOver, setNodeRef } = useDroppable({
     id: `slot-${r}-${c}`,
