@@ -123,16 +123,36 @@ io.on("connection", (socket) => {
   socket.on("playCard", ({ gameId, r, c, card }) => {
     const game = games[gameId];
     if (!game) return;
-    // valida turno simples
-    if (game.turn !== socket.id)
+    // Validação 1: É o turno do jogador? (Já existia, mas é importante)
+    if (game.turn !== socket.id) {
       return socket.emit("errorMsg", "Não é seu turno");
+    }
+
+    // Validação 2: A carta jogada existe na mão do jogador?
+    const playerHand = game.hands[socket.id];
+    const cardInHand = playerHand.find((c) => c.cardId === card.cardId);
+
+    if (!cardInHand) {
+      return socket.emit("errorMsg", "Você não possui esta carta!");
+    }
+
+    // Validação 3: A posição no tabuleiro está vazia? (Já existia, mas reforçada)
+    if (game.board[r][c]) {
+      return socket.emit("errorMsg", "Este espaço já está ocupado!");
+    }
+
+    // --- FIM DAS NOVAS VALIDAÇÕES ---
+
     const player = socket.id;
     placeCard(game, r, c, card, player);
+
+    // LÓGICA ESSENCIAL: Remover a carta da mão do jogador após a jogada
+    game.hands[socket.id] = playerHand.filter((c) => c.cardId !== card.cardId);
 
     // Trocar turno
     game.turn = game.players.find((id) => id !== socket.id) || socket.id;
 
-    // VERIFICAR FIM DE JOGO (NOVA LINHA)
+    // VERIFICAR FIM DE JOGO
     checkGameOver(game);
 
     io.to(gameId).emit("gameState", game);
