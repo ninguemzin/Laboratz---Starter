@@ -1,3 +1,13 @@
+const cards = require("./cards_seed.json");
+
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
@@ -115,6 +125,16 @@ io.on("connection", (socket) => {
     if (game.players.length >= 2) return socket.emit("errorMsg", "Sala cheia");
     game.players.push(socket.id);
     socket.join(gameId);
+
+    // Quando a sala estiver cheia, comece o jogo!
+    if (game.players.length === 2) {
+      const shuffledDeck = shuffle([...cards]);
+      game.hands = {
+        [game.players[0]]: shuffledDeck.slice(0, 5),
+        [game.players[1]]: shuffledDeck.slice(5, 10),
+      };
+      game.status = "playing"; // Adiciona um status ao jogo
+    }
     io.to(gameId).emit("gameState", game);
   });
 

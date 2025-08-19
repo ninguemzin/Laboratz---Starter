@@ -6,7 +6,6 @@ const socket = io("http://localhost:4000");
 export default function App() {
   const [gameId, setGameId] = useState("room1");
   const [state, setState] = useState(null);
-  const [hand, setHand] = useState([]);
 
   useEffect(() => {
     socket.on("connect", () => console.log("connected", socket.id));
@@ -33,9 +32,9 @@ export default function App() {
 
   function play(r, c, card) {
     socket.emit("playCard", { gameId, r, c, card });
-    // remover da mão local para UX (servidor valida de verdade)
-    setHand((prev) => prev.filter((p) => p.cardId !== card.cardId));
   }
+
+  const myHand = state && state.hands ? state.hands[socket.id] : [];
 
   return (
     <div className="min-h-screen p-4 bg-gray-100 font-sans">
@@ -62,7 +61,7 @@ export default function App() {
         </div>
 
         <div className="grid grid-cols-3 gap-2 mb-4">
-          {hand.map((card) => (
+          {myHand.map((card) => (
             <div key={card.cardId} className="border p-2 bg-white rounded">
               <div className="text-sm font-semibold">{card.name}</div>
               <div className="text-xs">
@@ -83,7 +82,7 @@ export default function App() {
           ))}
         </div>
 
-        <Board state={state} onPlay={play} hand={hand} />
+        <Board state={state} onPlay={play} hand={myHand} />
       </div>
     </div>
   );
@@ -93,25 +92,54 @@ function Board({ state, onPlay, hand }) {
   const board = state
     ? state.board
     : Array.from({ length: 3 }, () => Array.from({ length: 3 }, () => null));
+  const player1_id = state?.players[0];
+  const player2_id = state?.players[1];
   return (
     <div>
+      {/* EXIBIR PONTUAÇÃO */}
+      {state?.status === "playing" && (
+        <div className="text-center text-xl font-bold mb-2">
+          <span className="text-blue-600">
+            {
+              state.board.flat().filter((c) => c && c.owner === player1_id)
+                .length
+            }
+          </span>
+          <span> x </span>
+          <span className="text-red-600">
+            {
+              state.board.flat().filter((c) => c && c.owner === player2_id)
+                .length
+            }
+          </span>
+        </div>
+      )}
+
       <div className="grid grid-cols-3 gap-2">
         {board.map((row, r) =>
-          row.map((cell, c) => (
-            <div
-              key={`${r}-${c}`}
-              className="h-28 border bg-white flex items-center justify-center relative"
-            >
-              {cell ? (
-                <div className="text-sm text-center">
-                  <div>{cell.card.name}</div>
-                  <div className="text-xs">{cell.card.element}</div>
-                </div>
-              ) : (
-                <DropSlot r={r} c={c} onPlay={onPlay} hand={hand} />
-              )}
-            </div>
-          ))
+          row.map((cell, c) => {
+            // Lógica de cores da borda
+            let borderColor = "border-gray-300";
+            if (cell) {
+              if (cell.owner === player1_id) borderColor = "border-blue-500";
+              if (cell.owner === player2_id) borderColor = "border-red-500";
+            }
+            return (
+              <div
+                key={`${r}-${c}`}
+                className="h-28 border bg-white flex items-center justify-center relative"
+              >
+                {cell ? (
+                  <div className="text-sm text-center">
+                    <div>{cell.card.name}</div>
+                    <div className="text-xs">{cell.card.element}</div>
+                  </div>
+                ) : (
+                  <DropSlot r={r} c={c} onPlay={onPlay} hand={hand} />
+                )}
+              </div>
+            );
+          })
         )}
       </div>
     </div>
