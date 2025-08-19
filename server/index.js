@@ -82,7 +82,12 @@ io.on("connection", (socket) => {
   console.log("socket connected", socket.id);
 
   socket.on("playCard", ({ gameId, r, c, card }) => {
-    // ... (código existente de validação e placeCard) ...
+    const game = games[gameId];
+    if (!game) return;
+    // valida turno simples
+    if (game.turn !== socket.id)
+      return socket.emit("errorMsg", "Não é seu turno");
+    const player = socket.id;
     placeCard(game, r, c, card, player);
 
     // Trocar turno
