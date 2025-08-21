@@ -51,14 +51,9 @@ export default function Card({
               backgroundSize: "contain",
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",
-              opacity: 0.5,
             }}
             className="absolute inset-0"
           ></div>
-
-          <div className="absolute bottom-1 left-0 right-0 text-center text-xs bg-black bg-opacity-50 px-1 rounded-b-md">
-            {card.name}
-          </div>
 
           <div className="absolute top-0 left-1">{card.sides.top}</div>
           <div className="absolute top-1/2 -translate-y-1/2 right-1">

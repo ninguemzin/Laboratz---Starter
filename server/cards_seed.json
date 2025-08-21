@@ -5,7 +5,7 @@
     "element": "radioativo",
     "rarity": "rare",
     "sides": { "top": 2, "right": 5, "bottom": 3, "left": 1 },
-    "imageUrl": "https://placehold.co/150x200/F9A825/000000?text=Rato%0AQuantico"
+    "imageUrl": "https://i.imgur.com/d87M0Oz.png"
   },
   {
     "cardId": "rat_002",
@@ -13,7 +13,7 @@
     "element": "mecanico",
     "rarity": "common",
     "sides": { "top": 3, "right": 2, "bottom": 2, "left": 4 },
-    "imageUrl": "https://placehold.co/150x200/78909C/FFFFFF?text=Rato%0AEngrenado"
+    "imageUrl": "https://i.imgur.com/14ztaj8.png"
   },
   {
     "cardId": "rat_003",
@@ -21,7 +21,7 @@
     "element": "mutante",
     "rarity": "common",
     "sides": { "top": 1, "right": 4, "bottom": 3, "left": 2 },
-    "imageUrl": "https://placehold.co/150x200/66BB6A/000000?text=Rato%0AMutante"
+    "imageUrl": "https://i.imgur.com/gU5Km9q.png"
   },
   {
     "cardId": "rat_004",
@@ -29,7 +29,7 @@
     "element": "mutante",
     "rarity": "uncommon",
     "sides": { "top": 4, "right": 1, "bottom": 2, "left": 3 },
-    "imageUrl": "https://placehold.co/150x200/5E35B1/FFFFFF?text=Rato%0ASombrio"
+    "imageUrl": "https://i.imgur.com/zsd3vFP.png"
   },
   {
     "cardId": "rat_005",
@@ -37,7 +37,7 @@
     "element": "radioativo",
     "rarity": "common",
     "sides": { "top": 2, "right": 2, "bottom": 2, "left": 2 },
-    "imageUrl": "https://placehold.co/150x200/FDD835/000000?text=Rato%0ARadioativo%0AJr"
+    "imageUrl": "https://i.imgur.com/vg71irA.png"
   },
   {
     "cardId": "rat_006",
@@ -45,7 +45,7 @@
     "element": "mecanico",
     "rarity": "uncommon",
     "sides": { "top": 5, "right": 1, "bottom": 1, "left": 1 },
-    "imageUrl": "https://placehold.co/150x200/A1887F/FFFFFF?text=Rato%0ATatico"
+    "imageUrl": "https://i.imgur.com/DTc06K2.png"
   },
   {
     "cardId": "rat_007",
@@ -53,7 +53,7 @@
     "element": "mutante",
     "rarity": "common",
     "sides": { "top": 1, "right": 3, "bottom": 4, "left": 2 },
-    "imageUrl": "https://placehold.co/150x200/4CAF50/000000?text=Rato%0AAgil"
+    "imageUrl": "https://i.imgur.com/1gKOLiM.png"
   },
   {
     "cardId": "rat_008",
@@ -61,7 +61,7 @@
     "element": "radioativo",
     "rarity": "rare",
     "sides": { "top": 4, "right": 4, "bottom": 1, "left": 1 },
-    "imageUrl": "https://placehold.co/150x200/EF5350/FFFFFF?text=Rato%0ABomba"
+    "imageUrl": "https://i.imgur.com/G0xBoyO.png"
   },
   {
     "cardId": "rat_009",
@@ -69,7 +69,7 @@
     "element": "mecanico",
     "rarity": "rare",
     "sides": { "top": 3, "right": 3, "bottom": 3, "left": 3 },
-    "imageUrl": "https://placehold.co/150x200/BDBDBD/000000?text=Rato%0ABlindado"
+    "imageUrl": "https://i.imgur.com/iCUxZrx.png"
   },
   {
     "cardId": "rat_010",
@@ -77,6 +77,6 @@
     "element": "mutante",
     "rarity": "uncommon",
     "sides": { "top": 2, "right": 5, "bottom": 1, "left": 2 },
-    "imageUrl": "https://placehold.co/150x200/7E57C2/FFFFFF?text=Rato%0ASorrateiro"
+    "imageUrl": "https://i.imgur.com/Xc49QP6.png"
   }
 ]
