@@ -5,6 +5,7 @@ import Board from '../components/Board';
 import Hand from '../components/Hand';
 import GameControls from '../components/GameControls';
 import GameOverModal from '../components/GameOverModal';
+import Header from '../components/Header';
 
 export default function GamePage() {
   const { socketId, gameId, setGameId, state, previousBoard, create, join, play } = useContext(GameContext);
@@ -30,7 +31,11 @@ export default function GamePage() {
       <div className="min-h-screen p-4 bg-gray-100 font-sans">
         <div className="max-w-3xl mx-auto relative">
           <GameOverModal state={state} socketId={socketId} />
+          
+          <Header />
+
           <h1 className="text-2xl font-bold mb-4">Laboratz — Prototype</h1>
+          
           <GameControls
             gameId={gameId}
             setGameId={setGameId}

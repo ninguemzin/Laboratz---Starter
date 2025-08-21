@@ -11,7 +11,8 @@ export const GameProvider = ({ children }) => {
   const [previousBoard, setPreviousBoard] = useState(null);
   const [audioUnlocked, setAudioUnlocked] = useState(false);
   const prevStateRef = useRef();
-
+  const [token, setToken] = useState(localStorage.getItem('token')); // <-- NOVO: Estado para o token
+  const [user, setUser] = useState(null);
   // --- Funções de Ação ---
 
   function unlockAudio() {
@@ -35,8 +36,79 @@ export const GameProvider = ({ children }) => {
     socketService.playCard(gameId, r, c, card);
   };
 
-  // --- Hooks de Efeito (useEffect) ---
+  async function register(username, password) {
+    try {
+      const res = await fetch('http://localhost:4000/api/users/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await res.json();
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+        setToken(data.token);
+      } else {
+        alert(data.msg || 'Erro no registro');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Erro de conexão ao registrar.');
+    }
+  }
 
+  async function login(username, password) {
+    try {
+      const res = await fetch('http://localhost:4000/api/users/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await res.json();
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+        setToken(data.token);
+      } else {
+        alert(data.msg || 'Erro no login');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Erro de conexão ao fazer login.');
+    }
+  }
+
+function logout() {
+    localStorage.removeItem('token');
+    setToken(null);
+    setUser(null);
+  }
+
+  // --- Hooks de Efeito (useEffect) ---
+useEffect(() => {
+  const loadUser = async () => {
+    const storedToken = localStorage.getItem('token');
+    if (storedToken) {
+      setToken(storedToken);
+    try {
+    // NEW: Fetch user data
+          const res = await fetch('http://localhost:4000/api/users', {
+            method: 'GET',
+            headers: { 'x-auth-token': storedToken },
+          });
+          const userData = await res.json();
+          if (res.ok) {
+            setUser(userData);
+          } else {
+            // Token is invalid, log out
+            logout();
+          }
+        } catch (err) {
+          console.error(err);
+          logout();
+        }
+      }
+    };
+    loadUser();
+  }, []);
   // Hook para conexão e eventos do socket
   useEffect(() => {
     socketService.connect(setSocketId);
@@ -100,6 +172,11 @@ export const GameProvider = ({ children }) => {
     create,
     join,
     play,
+    token, 
+    register, 
+    login, 
+    user,
+    logout,
   };
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
