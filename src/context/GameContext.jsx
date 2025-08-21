@@ -36,6 +36,26 @@ export const GameProvider = ({ children }) => {
     socketService.playCard(gameId, r, c, card);
   };
 
+ async function loadUserFromToken(currentToken) {
+    if (currentToken) {
+      try {
+        const res = await fetch('http://localhost:4000/api/users', {
+          method: 'GET',
+          headers: { 'x-auth-token': currentToken },
+        });
+        const userData = await res.json();
+        if (res.ok) {
+          setUser(userData); // Define os dados do usuário no estado
+        } else {
+          logout(); // Se o token for inválido, limpa tudo
+        }
+      } catch (err) {
+        console.error("Erro ao buscar usuário:", err);
+        logout();
+      }
+    }
+  }
+
   async function register(username, password) {
     try {
       const res = await fetch('http://localhost:4000/api/users/register', {
@@ -47,6 +67,7 @@ export const GameProvider = ({ children }) => {
       if (data.token) {
         localStorage.setItem('token', data.token);
         setToken(data.token);
+        await loadUserFromToken(data.token);
       } else {
         alert(data.msg || 'Erro no registro');
       }
@@ -67,6 +88,7 @@ export const GameProvider = ({ children }) => {
       if (data.token) {
         localStorage.setItem('token', data.token);
         setToken(data.token);
+        await loadUserFromToken(data.token);
       } else {
         alert(data.msg || 'Erro no login');
       }
@@ -83,32 +105,13 @@ function logout() {
   }
 
   // --- Hooks de Efeito (useEffect) ---
-useEffect(() => {
-  const loadUser = async () => {
+ useEffect(() => {
     const storedToken = localStorage.getItem('token');
     if (storedToken) {
-      setToken(storedToken);
-    try {
-    // NEW: Fetch user data
-          const res = await fetch('http://localhost:4000/api/users', {
-            method: 'GET',
-            headers: { 'x-auth-token': storedToken },
-          });
-          const userData = await res.json();
-          if (res.ok) {
-            setUser(userData);
-          } else {
-            // Token is invalid, log out
-            logout();
-          }
-        } catch (err) {
-          console.error(err);
-          logout();
-        }
-      }
-    };
-    loadUser();
+      loadUserFromToken(storedToken);
+    }
   }, []);
+
   // Hook para conexão e eventos do socket
   useEffect(() => {
     socketService.connect(setSocketId);

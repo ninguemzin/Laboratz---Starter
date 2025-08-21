@@ -4,7 +4,8 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const connectDB = require('./config/db');
-const cards = require('./cards_seed.json');
+const cards = require('./data/cards_seed.json');
+const cors = require('cors');
 
 // 2. INICIALIZAÇÃO DO APP E SERVIDOR
 const app = express();
@@ -17,6 +18,7 @@ connectDB();
 
 // 4. MIDDLEWARE
 // Permite que o Express leia o JSON do corpo das requisições para a API
+app.use(cors());
 app.use(express.json());
 
 // 5. LÓGICA DO JOGO (FUNÇÕES AUXILIARES)
