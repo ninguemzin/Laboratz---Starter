@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import request from 'supertest';
 import express from 'express';
-import userRoutes from './userRoutes'; // Usaremos as rotas diretamente
+import userRoutes from '../routes/userRoutes'; // Usaremos as rotas diretamente
 import mongoose from 'mongoose';
 import User from '../models/User';
 
