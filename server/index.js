@@ -1,3 +1,11 @@
+// Adicione estas linhas no topo do arquivo
+require('dotenv').config();
+const connectDB = require('./config/db');
+
+connectDB(); // Conecta ao banco de dados
+
+// ... resto do seu código (const cards = require(...), etc.)
+
 const cards = require("./cards_seed.json");
 
 function shuffle(array) {
@@ -19,17 +27,6 @@ const PORT = process.env.PORT || 4000;
 
 // simples store na memória (para protótipo)
 const games = {}; // gameId -> { board, players, turn }
-
-function elementAdvantage(e1, e2) {
-  if (e1 === e2) return 0;
-  if (e1 === "mecanico" && e2 === "mutante") return 1;
-  if (e1 === "mutante" && e2 === "radioativo") return 1;
-  if (e1 === "radioativo" && e2 === "mecanico") return 1;
-  if (e2 === "mecanico" && e1 === "mutante") return -1;
-  if (e2 === "mutante" && e1 === "radioativo") return -1;
-  if (e2 === "radioativo" && e1 === "mecanico") return -1;
-  return 0;
-}
 
 function checkGameOver(game) {
   const isBoardFull = game.board.every((row) =>
