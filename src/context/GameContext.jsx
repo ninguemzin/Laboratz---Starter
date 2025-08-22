@@ -13,6 +13,7 @@ export const GameProvider = ({ children }) => {
   const prevStateRef = useRef();
   const [token, setToken] = useState(localStorage.getItem('token')); // <-- NOVO: Estado para o token
   const [user, setUser] = useState(null);
+  const [view, setView] = useState('game');
   // --- Funções de Ação ---
 
   function unlockAudio() {
@@ -180,6 +181,8 @@ function logout() {
     login, 
     user,
     logout,
+    view,
+    setView,
   };
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;

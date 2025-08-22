@@ -10,10 +10,13 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  // Futuramente, podemos adicionar a coleção de cartas aqui
-  // cardCollection: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Card' }]
+  // CORREÇÃO: Este campo estava faltando no seu arquivo.
+  cardCollection: [{
+    type: mongoose.Schema.Types.ObjectId, // Diz que vamos armazenar IDs de outros documentos
+    ref: 'Card'                           // Diz que esses IDs se referem a documentos do modelo 'Card'
+  }]
 }, {
-  timestamps: true // Adiciona os campos createdAt e updatedAt automaticamente
+  timestamps: true 
 });
 
 module.exports = mongoose.models.User || mongoose.model('User', userSchema);

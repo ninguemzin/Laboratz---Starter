@@ -3,12 +3,20 @@ import React, { useContext } from 'react'; // Adicione useContext
 import { GameProvider, GameContext } from './context/GameContext';
 import GamePage from './pages/GamePage';
 import AuthPage from './pages/AuthPage'; // <-- NOVO: Importe a AuthPage
+import CollectionPage from './pages/CollectionPage';
 
 function AppContent() {
-  const { token } = useContext(GameContext); // Pega o token do contexto
+  const { token, view } = useContext(GameContext); // Pega o token do contexto
 
-  // Se houver um token, mostre a página do jogo. Senão, mostre a de autenticação.
-  return token ? <GamePage /> : <AuthPage />;
+  if (!token) {
+    return <AuthPage />;
+  }
+   if (view === 'collection') {
+    return <CollectionPage />;
+  }
+
+  // Por padrão, mostra a página do jogo
+  return <GamePage />;
 }
 
 function App() {
