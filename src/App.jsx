@@ -4,6 +4,7 @@ import { GameProvider, GameContext } from './context/GameContext';
 import GamePage from './pages/GamePage';
 import AuthPage from './pages/AuthPage'; // <-- NOVO: Importe a AuthPage
 import CollectionPage from './pages/CollectionPage';
+import DeckBuilderPage from './pages/DeckBuilderPage';
 
 function AppContent() {
   const { token, view } = useContext(GameContext); // Pega o token do contexto
@@ -14,7 +15,9 @@ function AppContent() {
    if (view === 'collection') {
     return <CollectionPage />;
   }
-
+if (view === 'deckBuilder') {
+    return <DeckBuilderPage />;
+  }
   // Por padrão, mostra a página do jogo
   return <GamePage />;
 }

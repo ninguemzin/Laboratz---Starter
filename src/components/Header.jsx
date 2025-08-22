@@ -19,6 +19,12 @@ export default function Header() {
         >
           Coleção
         </button>
+        <button
+          onClick={() => setView('deckBuilder')}
+          className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-1 px-3 rounded text-sm mr-2"
+        >
+          Decks
+        </button>
       <button 
         onClick={logout}
         className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded text-sm"

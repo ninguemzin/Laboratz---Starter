@@ -118,6 +118,7 @@ function placeCard(game, r, c, card, player) {
 
 // 6. ROTAS DA API
 app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/decks', require('./routes/deckRoutes')); // <-- ADICIONE ESTA LINHA
 
 // 7. LÓGICA DO SOCKET.IO
 io.on('connection', (socket) => {

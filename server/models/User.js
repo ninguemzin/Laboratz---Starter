@@ -1,5 +1,17 @@
 const mongoose = require('mongoose');
 
+const deckSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    default: 'Novo Deck'
+  },
+  cards: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Card'
+  }]
+});
+
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -14,7 +26,8 @@ const userSchema = new mongoose.Schema({
   cardCollection: [{
     type: mongoose.Schema.Types.ObjectId, // Diz que vamos armazenar IDs de outros documentos
     ref: 'Card'                           // Diz que esses IDs se referem a documentos do modelo 'Card'
-  }]
+  }], 
+  decks: [deckSchema] 
 }, {
   timestamps: true 
 });
