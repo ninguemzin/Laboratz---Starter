@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User'); // Importamos nosso Model de Usuário
+const Card = require('../models/Card');
 const auth = require('../middleware/authMiddleware');
 // --- ROTA DE REGISTRO ---
 // @route   POST /api/users/register
@@ -31,6 +32,12 @@ router.post('/register', async (req, res) => {
 
     // 5. Salva o usuário no banco de dados MongoDB
     await user.save();
+
+// 6. ADICIONA CARTAS INICIAIS AO NOVO USUÁRIO
+const starterCards = await Card.find().limit(5); // Pega as 5 primeiras cartas do DB
+user.cardCollection = starterCards.map(card => card._id);
+await user.save(); // Salva o usuário com sua nova coleção
+
 
     // 6. Cria e retorna um token JWT para o usuário já sair logado
     const payload = { user: { id: user.id } };
@@ -103,5 +110,31 @@ router.get('/', auth, async (req, res) => {
     res.status(500).send('Server Error');
   }
 });
+
+// @route   GET /api/users/collection
+// @desc    Get the logged-in user's card collection
+// @access  Private
+router.get('/collection', auth, async (req, res) => {
+  try {
+    // 1. Encontra o usuário no banco de dados usando o ID do token
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ msg: 'Usuário não encontrado.' });
+    }
+
+    // 2. Usa o método .populate() para buscar os dados completos de cada carta
+    //    na coleção do usuário.
+    await user.populate('cardCollection');
+
+    // 3. Retorna a coleção de cartas populada
+    res.json(user.cardCollection);
+
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Erro no servidor');
+  }
+});
+
 
 module.exports = router;

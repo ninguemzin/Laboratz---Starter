@@ -12,10 +12,29 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: '*' } });
 const PORT = process.env.PORT || 4000;
+const Card = require('./models/Card');
 
-// 3. CONEXÃO COM O BANCO DE DADOS
-connectDB();
+// LÓGICA PARA POPULAR O BANCO DE DADOS (SEEDER)
+const seedDatabase = async () => {
+  try {
+    // Verifica se já existem cartas no banco de dados
+    const cardCount = await Card.countDocuments();
+    if (cardCount > 0) {
+      console.log('O banco de dados de cartas já está populado.');
+      return;
+    }
 
+    // Se não houver cartas, insere as do arquivo de seed
+    await Card.insertMany(cards);
+    console.log('Banco de dados de cartas populado com sucesso!');
+  } catch (error) {
+    console.error('Erro ao popular o banco de dados de cartas:', error);
+  }
+};
+
+connectDB().then(() => {
+  seedDatabase();
+});
 // 4. MIDDLEWARE
 // Permite que o Express leia o JSON do corpo das requisições para a API
 app.use(cors());
